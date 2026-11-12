@@ -97,6 +97,42 @@ def _save_direction(path: Path, p_model: Any, train: list[dict[str, Any]], state
     return {"projection_sd": projected_sd, "direction_norm": length}
 
 
+def _paired_feedback_shift(
+    records: list[dict[str, Any]], p_model: Any, state_index: int,
+    source_arm: str, condition: str,
+) -> dict[str, Any]:
+    rows = {
+        (r["case_id"], r.get("condition")): r
+        for r in records if r["split"] == "test" and r["round"] == 2
+        and r["arm"] == source_arm and r.get("condition") in ("neutral", condition)
+        and r["parse_ok"] and r["p_accept"] is not None
+    }
+    observed, predicted = [], []
+    for case_id in sorted({case_id for case_id, _ in rows}):
+        neutral = rows.get((case_id, "neutral"))
+        feedback = rows.get((case_id, condition))
+        if neutral is None or feedback is None:
+            continue
+        states = np.stack((neutral["_state"][state_index], feedback["_state"][state_index])).astype(np.float64)
+        scores = p_model.predict(states)
+        observed.append(float(feedback["p_accept"] - neutral["p_accept"]))
+        predicted.append(float(scores[1] - scores[0]))
+    correlation = None
+    if len(observed) > 2 and np.std(observed) > 0 and np.std(predicted) > 0:
+        correlation = float(np.corrcoef(observed, predicted)[0, 1])
+    nonzero = [(actual, estimate) for actual, estimate in zip(observed, predicted)
+               if actual != 0 and estimate != 0]
+    return {
+        "n_pairs": len(observed),
+        "mean_reported_p_shift": float(np.mean(observed)) if observed else None,
+        "mean_probe_p_shift": float(np.mean(predicted)) if predicted else None,
+        "shift_correlation": correlation,
+        "n_nonzero_shift_pairs": len(nonzero),
+        "sign_agreement": float(np.mean([np.sign(actual) == np.sign(estimate)
+                                         for actual, estimate in nonzero])) if nonzero else None,
+    }
+
+
 def fit_probes(run_dir: str | Path, output_dir: str | Path) -> dict[str, Any]:
     run = Path(run_dir)
     out = Path(output_dir)
@@ -143,10 +179,41 @@ def fit_probes(run_dir: str | Path, output_dir: str | Path) -> dict[str, Any]:
                 for name, t_round, t_arm, t_condition in transfer_specs:
                     target = _rows(records, split="test", round_no=t_round, arm=t_arm, condition=t_condition)
                     transfers[name] = _metrics(target, state_index, p_model, v_model, mean_p, majority)
+                domains = sorted({r["domain"] for r in train + test})
+                heldout_by_domain = {
+                    domain: _metrics([r for r in test if r["domain"] == domain],
+                                     state_index, p_model, v_model, mean_p, majority)
+                    for domain in domains
+                }
+                cross_domain = {}
+                for source_domain in domains:
+                    source_train = [r for r in train if r["domain"] == source_domain]
+                    if len(source_train) < 10:
+                        continue
+                    domain_p, domain_v, domain_mean, domain_majority, domain_n, _ = _fit(source_train, state_index)
+                    for target_domain in domains:
+                        if target_domain == source_domain:
+                            continue
+                        target_rows = [r for r in test if r["domain"] == target_domain]
+                        cross_domain[f"{source_domain}:{target_domain}"] = {
+                            "n_train": domain_n,
+                            **_metrics(target_rows, state_index, domain_p, domain_v,
+                                       domain_mean, domain_majority),
+                        }
+                feedback_shifts = {}
+                if fit_name == "second_neutral":
+                    for source_arm in ("p_first", "v_only"):
+                        for feedback in ("opposite", "aligned"):
+                            feedback_shifts[f"{source_arm}:{feedback}"] = _paired_feedback_shift(
+                                records, p_model, state_index, source_arm, feedback
+                            )
                 results["fits"][fit_name] = {
                     "status": "fit", "n_train": n_train, "n_test": len(test),
                     "train_accept_counts": dict(class_counts), "direction": direction_info,
                     "transfers_at_block20": transfers,
+                    "heldout_by_domain_at_block20": heldout_by_domain,
+                    "cross_domain_at_block20": cross_domain,
+                    "feedback_shifts_at_block20": feedback_shifts,
                 }
         results["fits"][fit_name]["layer_curve"] = curves
     (out / "probe_results.json").write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")

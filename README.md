@@ -4,6 +4,10 @@ Research code for studying how an open-weight language model reports a forecast 
 
 The central target is the model's **own forthcoming report**. A decoded percentage is not a ground-truth probability, and a decodable feature is not automatically a causally used belief. The software records first- and second-round outputs, pre-answer layer states, held-out probes, NLA descriptions, and targeted interventions so these claims can be tested separately.
 
+## Sprint provenance
+
+The initial pipeline, prompt protocol, and selected 300-case file were prepared on November 12, 2026, before the AI x Epistemics Research Sprint began. They are preexisting work. The full model runs, probe and NLA evaluations, matched-control interventions, analysis, and report were conducted during the November 13-15 sprint. This distinction is recorded here because the sprint requires prior code and new work to be identified.
+
 ## Research protocol
 
 1. Prompt Qwen2.5-7B-Instruct with a pending graduate or paper admission case. First-round arms ask for percentage before verdict, verdict before percentage, percentage only, verdict only, or a natural answer.
@@ -27,15 +31,17 @@ Input is UTF-8 JSONL, one object per case:
 
 Keep source datasets and all run outputs outside this repository. The project does not download or redistribute either dataset.
 
+For the sprint run, GradCafe was read at commit `629ca5d26b4dae52bc4e5187e1bb7732ab41ccf9` and PeerRead at commit `9bb37751781a900cee9e74ec3105997732c8e8e5`. Sampling used seed 42 and 150 cases per domain; the selected JSONL SHA-256 is `bd61ddf20c0c54fa80f9be78709a2f7389cfd678bf5c543d9e4ef030c0d15ca0`.
+
 ## Setup on one A40 48 GB
 
-Use a Linux CUDA environment with Python 3.10+ and enough disk for the target (~15 GB), NLA actor (~15 GB), optional NLA reconstructor (~11 GB), Python environment, and outputs. A 100 GB volume is a reasonable starting size. Model stages run sequentially: collect/probe/intervene use the target; NLA decoding uses the actor server. Do not keep a target process loaded while starting NLA if memory is tight.
+Use a Linux CUDA environment with Python 3.10+ and enough disk for the target (~15 GB), NLA actor (~15 GB), optional NLA reconstructor (~11 GB), Python environments, and outputs. A 100 GB volume is a reasonable starting size. Model stages run sequentially: collect/probe/intervene use the target environment; NLA decoding and reconstruction use a separate SGLang environment. Do not keep a target process loaded while starting NLA if memory is tight.
 
 ```bash
 python -m venv .venv
-. .venv/bin/activate
-python -m pip install -e .
-python -m pip install 'sglang[all]>=0.5.6,<0.6' httpx orjson
+.venv/bin/python -m pip install -e .
+python -m venv .nla-venv
+.nla-venv/bin/python -m pip install -e '.[nla]'
 ```
 
 The package pins the target model to Hugging Face revision `a09a35458c702b33eeacc393d103063234e8bc28`. The [official NLA actor](https://huggingface.co/kitft/nla-qwen2.5-7b-L20-av) and [reconstructor](https://huggingface.co/kitft/nla-qwen2.5-7b-L20-ar) must match Qwen2.5-7B-Instruct, 3584 dimensions, and block 20. Download them outside this repo:
@@ -54,6 +60,7 @@ Record the printed NLA inference source commit with the study's run notes. The `
 Prepare one or both historical datasets, or supply a separately curated case file. The importers never mark historical rows verified.
 
 ```bash
+. .venv/bin/activate
 forecast-mechanisms import-gradcafe /work/raw/gradcafe /work/data/gradcafe.jsonl
 forecast-mechanisms import-peerread /work/raw/PeerRead/data/iclr_2017 /work/data/peerread.jsonl
 forecast-mechanisms sample /work/data/cases.jsonl /work/data/gradcafe.jsonl /work/data/peerread.jsonl --per-domain 150
@@ -66,15 +73,17 @@ forecast-mechanisms analyze /work/runs/main /work/runs/analysis
 
 `collect` writes one activation matrix per prompt and resumes safely when called again with the same cases, model, and settings. The case split is deterministic by ID; all arms and turns for one case stay in the same split. A changed case file or setting requires a new run directory. Failed parses remain in the record and are counted, never silently corrected.
 
-After collection, stop the target-model process. Start the NLA actor server using the **same checkpoint path** and disable radix caching, as required by the [official inference instructions](https://github.com/kitft/nla-inference):
+After collection, stop the target-model process and activate `.nla-venv`. Start the NLA actor server using the **same checkpoint path** and disable radix caching, as required by the [official inference instructions](https://github.com/kitft/nla-inference):
 
 ```bash
+. .nla-venv/bin/activate
 python -m sglang.launch_server --model-path /work/models/nla-av --port 30000 --disable-radix-cache --mem-fraction-static 0.80 --trust-remote-code
 ```
 
 In another shell:
 
 ```bash
+. .nla-venv/bin/activate
 forecast-mechanisms nla /work/runs/main /work/runs/nla \
   --actor /work/models/nla-av \
   --official-module /work/deps/nla-inference/nla_inference.py
@@ -93,11 +102,16 @@ A missing close tag is preserved as a failed parse.
 Stop the NLA server before loading the target model again for interventions:
 
 ```bash
+. .venv/bin/activate
 forecast-mechanisms intervene /work/runs/main /work/runs/probes /work/runs/interventions
 forecast-mechanisms analyze /work/runs/main /work/runs/analysis --intervention-dir /work/runs/interventions
 ```
 
-The intervention stage checks that unmodified replays exactly match collection before applying a direction. Large interventions (over 15% of the source state's norm) are skipped and counted. The output includes all parser failures, abstentions, matched controls, and case-level links needed for analysis.
+The intervention stage checks that unmodified replays exactly match collection before applying a direction. Fixed probe-direction doses are ±1, ±2, and ±4 training-set projection SDs, with three orthogonal controls at the extreme doses. Large interventions (over 15% of the source state's norm) are skipped and counted. The output includes all parser failures, abstentions, matched controls, and case-level links needed for analysis.
+
+## Sprint findings
+
+On 300 cases, the run produced 3,291 model responses, 160 held-out NLA target descriptions with matched controls, and 6,513 intervention records. In PeerRead, a neutral second turn changed the initial verdict in 119/150 cases after percentage-plus-verdict history, versus 5/147 after verdict-only history. A block-20 percentage probe beat a simple mean baseline within its training condition but transferred poorly across format, domain, and feedback conditions. NLA descriptions largely named output format rather than case-specific forecasts. The held-out intervention produced no consistent percentage or verdict change beyond orthogonal controls at the tested doses; all 501 baseline replays matched collection. These findings concern the model's own reports, not calibration to verified decisions.
 
 ## Interpretation and reproducibility
 

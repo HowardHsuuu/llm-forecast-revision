@@ -41,7 +41,7 @@ def _check_sidecar(checkpoint: Path) -> None:
     metadata = yaml.safe_load(sidecar.read_text(encoding="utf-8"))
     if metadata.get("role") != "av" or metadata.get("d_model") != EXPECTED_HIDDEN:
         raise ValueError("NLA actor role or hidden dimension does not match the target model")
-    if metadata.get("training", {}).get("extraction_layer_index") != NLA_LAYER:
+    if metadata.get("extraction_layer_index") != NLA_LAYER:
         raise ValueError("NLA actor was not trained on block-20 output")
 
 
@@ -151,8 +151,16 @@ def score_saved_nla(
             donor = source[control["donor_key"]]
             donor_vec = np.load(run / donor["activation_file"], allow_pickle=False)[NLA_LAYER + 1].astype(np.float32)
             control_mse, control_cosine = critic.score(control["explanation"], donor_vec)
+            target_on_donor_mse, target_on_donor_cosine = critic.score(explanation, donor_vec)
+            control_on_target_mse, control_on_target_cosine = critic.score(control["explanation"], vector)
             result["control_mse"] = float(control_mse)
             result["control_cosine"] = float(control_cosine)
+            result["target_on_donor_mse"] = float(target_on_donor_mse)
+            result["target_on_donor_cosine"] = float(target_on_donor_cosine)
+            result["control_on_target_mse"] = float(control_on_target_mse)
+            result["control_on_target_cosine"] = float(control_on_target_cosine)
+            result["target_specificity_mse_margin"] = float(target_on_donor_mse - mse)
+            result["control_specificity_mse_margin"] = float(control_on_target_mse - control_mse)
         scores.append(result)
     write_jsonl(out / "nla_fidelity.jsonl", scores)
     return {"scored": len(scores)}

@@ -30,7 +30,7 @@ def _orthogonal_controls(direction: np.ndarray, count: int, seed: int) -> list[n
 
 def intervene(
     run_dir: str | Path, probe_dir: str | Path, output_dir: str | Path,
-    runner: ForecastRunner, *, doses: tuple[float, ...] = (-1.0, -0.5, 0.5, 1.0),
+    runner: ForecastRunner, *, doses: tuple[float, ...] = (-4.0, -2.0, -1.0, 1.0, 2.0, 4.0),
     n_controls: int = 3, seed: int = 42, max_fraction_of_state_norm: float = 0.15,
 ) -> dict[str, Any]:
     run, probe, out = Path(run_dir), Path(probe_dir), Path(output_dir)
@@ -82,6 +82,7 @@ def intervene(
             baseline_ok = replay == row["response"]
             baseline_row = {
                 "intervention_key": baseline_key, "source_key": row["key"], "case_id": row["case_id"],
+                "domain": row["domain"],
                 "round": row["round"], "arm": row["arm"], "condition": row.get("condition"),
                 "kind": "baseline", "dose": 0.0, "response": replay,
                 "replay_matches_collection": baseline_ok,
@@ -110,6 +111,7 @@ def intervene(
                     out_of_range += 1
                     append_jsonl(records_path, {
                         "intervention_key": key, "source_key": row["key"], "case_id": row["case_id"],
+                        "domain": row["domain"],
                         "round": row["round"], "arm": row["arm"], "condition": row.get("condition"),
                         "kind": kind, "dose": dose, "relative_norm": relative_norm,
                         "status": "skipped_large_intervention", "response": None,
@@ -121,6 +123,7 @@ def intervene(
                 response = runner.generate(row["messages"], intervention=(NLA_LAYER, delta))
                 append_jsonl(records_path, {
                     "intervention_key": key, "source_key": row["key"], "case_id": row["case_id"],
+                    "domain": row["domain"],
                     "round": row["round"], "arm": row["arm"], "condition": row.get("condition"),
                     "kind": kind, "dose": dose, "relative_norm": relative_norm,
                     "status": "generated", "response": response,
