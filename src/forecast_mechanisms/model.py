@@ -107,3 +107,61 @@ class ForecastRunner:
         states = self.preanswer_states(messages)
         response = self.generate(messages)
         return response, states
+
+    def generate_at_step(
+        self, messages: list[dict[str, str]], *, block_index: int,
+        token_index: int, delta: np.ndarray,
+    ) -> tuple[str, list[int], np.ndarray]:
+        """Add a residual delta just before generated token ``token_index``.
+
+        Step zero is the prompt's final token; later steps each consume the
+        preceding generated token. The returned token IDs allow callers to
+        verify an unchanged prefix; the step scores allow a positive control
+        even when the discrete answer does not change.
+        """
+        torch = self.torch
+        if not 0 <= block_index < EXPECTED_BLOCKS:
+            raise ValueError("intervention block must be a transformer block index")
+        if not 0 <= token_index < self.max_new_tokens:
+            raise ValueError("generated token index is outside the generation cap")
+        vector = np.asarray(delta, dtype=np.float32)
+        if vector.shape != (EXPECTED_HIDDEN,) or not np.isfinite(vector).all():
+            raise ValueError("invalid intervention vector")
+        prompt_ids = self._ids(messages)
+        perturbation = torch.as_tensor(vector, dtype=torch.bfloat16, device=self.model.device)
+        current_step = 0
+        applied = False
+
+        def hook(_module: Any, _inputs: Any, output: Any) -> Any:
+            nonlocal current_step, applied
+            step = current_step
+            current_step += 1
+            if step != token_index:
+                return output
+            hidden = output[0] if isinstance(output, tuple) else output
+            changed = hidden.clone()
+            changed[:, -1, :] += perturbation
+            applied = True
+            if isinstance(output, tuple):
+                return (changed, *output[1:])
+            return changed
+
+        handle = self.model.model.layers[block_index].register_forward_hook(hook)
+        try:
+            with torch.inference_mode():
+                generated = self.model.generate(
+                    input_ids=prompt_ids, attention_mask=torch.ones_like(prompt_ids),
+                    max_new_tokens=self.max_new_tokens, do_sample=False,
+                    pad_token_id=(self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None
+                                  else self.tokenizer.eos_token_id),
+                    return_dict_in_generate=True, output_scores=True,
+                )
+        finally:
+            handle.remove()
+        if not applied:
+            raise RuntimeError("intervention hook was not applied at the requested generated step")
+        tokens = generated.sequences[0, prompt_ids.shape[-1]:].tolist()
+        if len(generated.scores) <= token_index:
+            raise RuntimeError("generation ended before the requested score step")
+        step_scores = generated.scores[token_index][0].float().cpu().numpy()
+        return self.tokenizer.decode(tokens, skip_special_tokens=True).strip(), tokens, step_scores
