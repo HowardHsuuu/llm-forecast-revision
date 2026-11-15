@@ -1,0 +1,54 @@
+{
+  "counts": {
+    "all": 160,
+    "initial_rejects": 14,
+    "natural_flips": 82,
+    "natural_stable_accepts": 64
+  },
+  "loci": {
+    "first_number": {
+      "complete_percentage_changed": 34,
+      "initial_rejects_preserved": 14,
+      "orth_restored": 4,
+      "paired_restoration_difference": {
+        "ci95": [
+          0.024390243902439025,
+          0.15853658536585366
+        ],
+        "mean": 0.08536585365853659,
+        "n": 82
+      },
+      "plus_restored": 11,
+      "stable_accepts_preserved": 64,
+      "sustained_overlap": 11
+    },
+    "first_verdict": {
+      "complete_percentage_changed": 0,
+      "initial_rejects_preserved": 14,
+      "orth_restored": 1,
+      "paired_accept_minus_reject_margin_shift": {
+        "ci95": [
+          0.3034264358078561,
+          0.794171172525824
+        ],
+        "mean": 0.548780545955751,
+        "n": 82
+      },
+      "paired_restoration_difference": {
+        "ci95": [
+          0.0,
+          0.08536585365853659
+        ],
+        "mean": 0.036585365853658534,
+        "n": 82
+      },
+      "plus_restored": 4,
+      "stable_accepts_preserved": 64,
+      "sustained_overlap": 4
+    }
+  },
+  "protocol": "decision-step-localization-summary-v1",
+  "records_sha256": "2fafd8c5bd0569bffca470eb988e63f34b43461b79b560cc07876e8fe59c3c91",
+  "restoration_overlap_between_loci": 0,
+  "sustained_records_sha256": "362482f1fd04d48095ae146321194d02e9b0ef18f546b54c2ad503c0971a7b9d"
+}
