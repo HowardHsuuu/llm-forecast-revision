@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "forecast-mechanisms"
-version = "0.1.0"
+version = "0.1.2"
 description = "Activation readouts and interventions for unresolved-outcome forecasts"
 requires-python = ">=3.10"
 dependencies = [

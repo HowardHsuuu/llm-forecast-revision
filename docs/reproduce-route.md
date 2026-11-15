@@ -63,7 +63,7 @@ The `):` value patch changes the processed target-minus-neutral first-token marg
 
 The route records measure the first numeric token. Full-answer continuation separately verifies the state/head-20 result above. Direct block-20 replacement also generates the full answer so its percentage can be compared with the natural counterpart. The head and cache patches preserve the already-generated answer prefix.
 
-The separate 160-case wording validation is reported in [the paper](research-report.md). Its fixed protocol, exact run scripts, aggregate results, and source-data preparation instructions are in the [code supplement](https://github.com/HowardHsuuu/llm-forecast-revision/releases/download/v0.1.1/forecast-mechanisms-submission-code.zip).
+The first 160-case wording validation is reported in [the paper](research-report.md). Its fixed protocol, exact run scripts, aggregate results, and source-data preparation instructions are in the [code supplement](https://github.com/HowardHsuuu/llm-forecast-revision/releases/download/v0.1.2/forecast-mechanisms-submission-code.zip). A further disjoint cohort tests [case-paired cached-value replacements under each wording](reproduce-wording-v2.md).
 
 ## Readouts
 
