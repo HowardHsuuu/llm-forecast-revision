@@ -1,0 +1,130 @@
+{
+  "actor": {
+    "repo": "kitft/nla-qwen2.5-7b-L20-av",
+    "revision": "b88469162777ae6553bc14208eb0cb579336f8f4",
+    "sidecar_sha256": "2ff1aef3fcab48caf2e799733fbcc7d0ba0dd74a18e52d4b91b278d4abe2bddd"
+  },
+  "block": 20,
+  "cases": [
+    {
+      "case_id": "gradcafe-056c976396c60ce1",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-0c6f2a5c6ff91a90",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-e9d4597fdddd4425",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-af4c01e09f4436f6",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-3f977f5a93d827ab",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-f3f7e7181bf19982",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-49f3d94f80b4aafe",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-5d8f1aa081f5decc",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-98effeb63d9c250e",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-0dd4141bad09e4b4",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-e837ae2a0b240a4a",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "peerread-08da783b20269ba1",
+      "phase": "pilot"
+    },
+    {
+      "case_id": "gradcafe-a951aa66dc535f42",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-2dfe3b63adcb2003",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-f85350a272ddecc3",
+      "phase": "replication"
+    },
+    {
+      "case_id": "gradcafe-958b5b2937d40e56",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-4e61c1072263a355",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-327e0f98c615e9f4",
+      "phase": "replication"
+    },
+    {
+      "case_id": "gradcafe-9739110bc2ce2bbe",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-844cdd40e90bb3d3",
+      "phase": "replication"
+    },
+    {
+      "case_id": "gradcafe-08f2aba5739a5664",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-3c95cf830645669c",
+      "phase": "replication"
+    },
+    {
+      "case_id": "gradcafe-b8e9868bb793268f",
+      "phase": "replication"
+    },
+    {
+      "case_id": "peerread-d8a17a2d414a4310",
+      "phase": "replication"
+    }
+  ],
+  "hidden_size": 3584,
+  "official_client": {
+    "module_sha256": "45cbf64489dc8f1daa8c9e98fe4dd4e881e4fd743fd783d6128c070cc0677f26",
+    "repo": "https://github.com/kitft/nla-inference",
+    "revision": "38b802a33d1d317f21b6825a9116f388c2141f86"
+  },
+  "position": "pre_number",
+  "prepared_sha256": {
+    "directions.npy": "64de59f88edf03c3d4493d3867be2eff87130e988b9032db28536f8464c81ea1",
+    "key.jsonl": "1819e3cbf4e0a46c84eb3678f45af0bd01e773ebe41c9aaaf212b0847ac1f21a",
+    "vectors.npy": "8067a52dc6e14c9400d071111a52f7ba45e9a9a074646af65121c57747668d69"
+  },
+  "prompt_voice": "third_person",
+  "protocol": "matched-nla-v1",
+  "reconstructor": {
+    "repo": "kitft/nla-qwen2.5-7b-L20-ar",
+    "revision": "e2c9e57eac213d37a31612087f645ab6332c1bb6",
+    "sidecar_sha256": "553eb4ac1a585d598c6460032a9237f6951a68070afce42595dcc72b73c250ce"
+  },
+  "seed": 20261114,
+  "source_records_sha256": "43c6cbd82e709e956b531bafd9bae359812d4c11a21a1695450044af19d9101d",
+  "target_model": "Qwen/Qwen2.5-7B-Instruct",
+  "target_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "trace_manifest_sha256": "40c6bde4c0e6448ace6438f493645860a574cadf11da67097b9654c73c12e0b9"
+}

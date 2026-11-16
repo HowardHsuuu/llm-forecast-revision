@@ -1,4 +1,4 @@
-"""Summarize the frozen third-cohort wording and prefix-cache experiment."""
+"""Summarize the frozen case-paired wording wording and prefix-cache experiment."""
 
 from __future__ import annotations
 

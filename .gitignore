@@ -8,3 +8,10 @@ dist/
 data/
 weights/
 runs/
+
+# Manuscripts and submission artifacts are stored outside this repository.
+paper/
+reports/
+manuscript/
+docs/report.pdf
+docs/research-report.md

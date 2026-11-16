@@ -16,7 +16,7 @@ Use the GradCafe and PeerRead imports from the
 SHA-256 digests are, respectively,
 `945a7c99f0f04e18f3f243c02bd47651234044aea60c8f3a8ce24141075c8d05`
 and `8195b87b0493782ea01195519467b58196cd87825e9e8093c4acf107900fe8c9`.
-Install the package on a CUDA machine with at least 24 GB of free GPU
+Install the package on a CUDA machine with at least 24 GiB of free GPU
 memory; the reference run used an A40. The case selector reproduces the
 first 160-case training cohort and a fourth 160-case confirmation cohort.
 The latter excludes the original, training, and case-paired wording

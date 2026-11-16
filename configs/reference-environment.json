@@ -1,0 +1,23 @@
+{
+  "gpu": "NVIDIA A40, 48 GB",
+  "inference": {
+    "attention_implementation": "sdpa",
+    "do_sample": false,
+    "dtype": "bfloat16"
+  },
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "packages": {
+    "accelerate": "1.15.0",
+    "huggingface-hub": "0.36.2",
+    "numpy": "2.5.4",
+    "pyyaml": "6.0.3",
+    "safetensors": "0.8.0",
+    "scikit-learn": "1.9.1",
+    "tokenizers": "0.22.2",
+    "torch": "2.8.0+cu128",
+    "transformers": "4.57.6"
+  },
+  "python": "3.12.3",
+  "scope": "Reference CUDA inference and analysis environment; direct package versions"
+}

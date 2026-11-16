@@ -1,0 +1,70 @@
+{
+  "analysis_script_sha256": "f0c8bf272bb74980706731c3a5c795a2eaf161a8166211dfc7202c4d303eb466",
+  "common_sha256": "ac27443e0bd8b302ef78c54660abfd0d5a3c4d8aaa5a863017b896936d06f200",
+  "first_turn_predictions_sha256": "ea384ea530333f038c37c2ffd4d912c84e49ef34102934bee9b8b4404d93166b",
+  "percentage": {
+    "copy_first_mae": 11.962025316455696,
+    "excluded_test": 2,
+    "field_baseline_mae": 12.178110572813967,
+    "field_baseline_mae_gain_ci95": [
+      3.791816654806166,
+      6.954692075650612
+    ],
+    "n_test": 158,
+    "n_train": 160,
+    "posthoc_random_forest": {
+      "mae": 11.310096523343823,
+      "probe_gain_ci95": [
+        3.0622620377055214,
+        6.003439877395192
+      ],
+      "selection": {
+        "cv_mae": 12.015820761858063,
+        "max_depth": 5,
+        "min_samples_leaf": 3
+      }
+    },
+    "probe_mae": 6.788517964820814
+  },
+  "percentage_predictions_sha256": "2acb0b7edb6a32c4966a77cc873f22bae379220a3342ddc0d39ccb89142a01f2",
+  "protocol": "pre-answer-readouts-summary-v1",
+  "test_records_sha256": "194543ab49fabd2b8dc68a80ae3c7a7f56dfd401bf13afd3fe91f734279809cf",
+  "train_records_sha256": "76c1954d3a44c345ef3556f79adf840a93bd0446cc34160ee61ccd87daa64a05",
+  "verdict": {
+    "field_baseline": {
+      "accuracy": 0.6058394160583942,
+      "auroc": 0.535070785070785,
+      "balanced_accuracy": 0.5726083226083226,
+      "brier": 0.23783804619307333,
+      "log_loss": 0.6672633960150337,
+      "n": 137,
+      "positive": 63
+    },
+    "n_test": 137,
+    "n_train": 147,
+    "posthoc_first_turn_control": {
+      "accuracy": 0.7664233576642335,
+      "auroc": 0.853925353925354,
+      "balanced_accuracy": 0.7649077649077649,
+      "brier": 0.16851953284166477,
+      "log_loss": 0.545598342227304,
+      "n": 137,
+      "positive": 63
+    },
+    "second_minus_first_auroc": 0.09116259116259107,
+    "second_minus_first_auroc_ci95": [
+      0.04003978274811604,
+      0.1482224190004584
+    ],
+    "second_turn_pre_answer": {
+      "accuracy": 0.8978102189781022,
+      "auroc": 0.945087945087945,
+      "balanced_accuracy": 0.8936078936078936,
+      "brier": 0.08946744992920407,
+      "log_loss": 0.3262557162529277,
+      "n": 137,
+      "positive": 63
+    }
+  },
+  "verdict_predictions_sha256": "78bd121172d57690cabdb53e86a3306c701d452b5d0a84d9e162732e3d3895cb"
+}

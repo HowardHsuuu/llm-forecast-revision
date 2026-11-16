@@ -165,7 +165,7 @@ def intervention(
 
 def indexed_records() -> tuple[dict, dict, dict]:
     if digest(CASES) != CASE_SHA:
-        raise ValueError("frozen third-cohort cases changed")
+        raise ValueError("frozen case-paired wording cases changed")
     baseline_completion = verify_complete_run(ROOT / "baseline")
     variant_completion = json.loads((ROOT / "variants" / "completion.json").read_text())
     if digest(ROOT / "variants" / "records.jsonl") != variant_completion["records_sha256"]:
@@ -179,7 +179,7 @@ def indexed_records() -> tuple[dict, dict, dict]:
     valid_first = sum(row["parse_ok"] for row in first.values())
     if (len(first) != 160 or len(second) != valid_first * 5
             or baseline_completion["total_records"] != 160 + valid_first * 2):
-        raise ValueError("third-cohort conversation matrix incomplete")
+        raise ValueError("case-paired wording conversation matrix incomplete")
     return first, second, {row["case_id"]: row for row in read_jsonl(CASES)}
 
 

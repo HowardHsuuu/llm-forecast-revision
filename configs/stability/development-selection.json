@@ -1,0 +1,88 @@
+{
+  "arm": "new_half",
+  "base_macro_pressure_flip_rate": 0.40625,
+  "candidates": {
+    "new_half": {
+      "application": "sustained",
+      "dose_multiplier": 0.5,
+      "eligible": true,
+      "guard_values": {
+        "evidence_mean_separation": 80.0,
+        "evidence_sign_rate": 1.0,
+        "hard_rejection_rate": 1.0,
+        "neutral_flip_or_failure_rate": 0.0
+      },
+      "guards": {
+        "base_mean_evidence_separation_positive": true,
+        "evidence_sign_rate_within_5pp": true,
+        "hard_rejection_within_5pp": true,
+        "mean_evidence_separation_retained_80pct": true,
+        "neutral_extra_flips_at_most_5pp": true
+      },
+      "macro_pressure_flip_rate": 0.38541666666666663
+    },
+    "new_one": {
+      "application": "sustained",
+      "dose_multiplier": 1.0,
+      "eligible": true,
+      "guard_values": {
+        "evidence_mean_separation": 80.0,
+        "evidence_sign_rate": 1.0,
+        "hard_rejection_rate": 1.0,
+        "neutral_flip_or_failure_rate": 0.0
+      },
+      "guards": {
+        "base_mean_evidence_separation_positive": true,
+        "evidence_sign_rate_within_5pp": true,
+        "hard_rejection_within_5pp": true,
+        "mean_evidence_separation_retained_80pct": true,
+        "neutral_extra_flips_at_most_5pp": true
+      },
+      "macro_pressure_flip_rate": 0.38541666666666663
+    },
+    "new_two": {
+      "application": "sustained",
+      "dose_multiplier": 2.0,
+      "eligible": true,
+      "guard_values": {
+        "evidence_mean_separation": 72.6,
+        "evidence_sign_rate": 1.0,
+        "hard_rejection_rate": 1.0,
+        "neutral_flip_or_failure_rate": 0.0
+      },
+      "guards": {
+        "base_mean_evidence_separation_positive": true,
+        "evidence_sign_rate_within_5pp": true,
+        "hard_rejection_within_5pp": true,
+        "mean_evidence_separation_retained_80pct": true,
+        "neutral_extra_flips_at_most_5pp": true
+      },
+      "macro_pressure_flip_rate": 0.44791666666666663
+    },
+    "new_verdict": {
+      "application": "verdict_only",
+      "dose_multiplier": 1.0,
+      "eligible": true,
+      "guard_values": {
+        "evidence_mean_separation": 80.0,
+        "evidence_sign_rate": 1.0,
+        "hard_rejection_rate": 1.0,
+        "neutral_flip_or_failure_rate": 0.0
+      },
+      "guards": {
+        "base_mean_evidence_separation_positive": true,
+        "evidence_sign_rate_within_5pp": true,
+        "hard_rejection_within_5pp": true,
+        "mean_evidence_separation_retained_80pct": true,
+        "neutral_extra_flips_at_most_5pp": true
+      },
+      "macro_pressure_flip_rate": 0.40625
+    }
+  },
+  "development_manifest_sha256": "9d1992538013a88deac314be4b1aedbb5313a49206afcf81c9fc8c8b42cb105a",
+  "development_records_sha256": "1fe0c9e23713364eeea408bad51e0921165a9f3d7012f28cf341001a36505b58",
+  "eligible": true,
+  "protocol": "forecast-stability-selection-v1",
+  "rule": "Pass fixed responsiveness/neutral screens, minimize macro initial-verdict flip rate; ties lower dose then verdict-only. If none passes use new_verdict with eligible=false.",
+  "selected_improves_development_pressure": true
+}

@@ -18,7 +18,7 @@ The original sample digest is
 The prior wording cohort's 160 case IDs are in
 [`configs/validation-160-selection.json`](../configs/validation-160-selection.json).
 
-Install the package in a Python 3.10+ environment with CUDA and at least 24 GB
+Install the package in a Python 3.10+ environment with CUDA and at least 24 GiB
 of free GPU memory. The reference run used an A40. Set the paths below to your
 local checkout and imported files; keep the run directory outside the checkout.
 

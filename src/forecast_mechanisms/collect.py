@@ -55,9 +55,13 @@ def collect(
 ) -> dict[str, int]:
     cases = read_jsonl(cases_path)
     validate_cases(cases)
-    if any(arm not in ARMS for arm in arms) or any(arm not in arms or arm not in ("p_first", "v_first", "v_only") for arm in second_sources):
+    if (not arms or len(set(arms)) != len(arms) or
+            len(set(second_sources)) != len(second_sources) or
+            any(arm not in ARMS for arm in arms) or
+            any(arm not in arms or arm not in ("p_first", "v_first", "v_only")
+                for arm in second_sources)):
         raise ValueError("invalid first or second arm selection")
-    if any(condition not in FOLLOWUPS for condition in followups):
+    if len(set(followups)) != len(followups) or any(condition not in FOLLOWUPS for condition in followups):
         raise ValueError("invalid followup selection")
     if prompt_voice not in PROMPT_VOICES:
         raise ValueError("invalid prompt voice")
@@ -79,14 +83,29 @@ def collect(
     else:
         manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     records_path = out / "records.jsonl"
-    existing = {row["key"]: row for row in read_jsonl(records_path)} if records_path.exists() else {}
+    saved_rows = read_jsonl(records_path) if records_path.exists() else []
+    existing = {row["key"]: row for row in saved_rows}
+    allowed_keys = {_key(case["case_id"], 1, arm, None)
+                    for case in cases for arm in arms}
+    allowed_keys.update(_key(case["case_id"], 2, arm, condition)
+                        for case in cases for arm in second_sources
+                        for condition in followups)
+    if len(existing) != len(saved_rows) or not set(existing) <= allowed_keys:
+        raise ValueError("saved collection contains duplicate or unexpected records")
     completed = skipped = 0
+    visited = set()
 
     def run_one(case: dict[str, Any], round_no: int, arm: str, condition: str | None, messages: list[dict[str, str]]) -> dict[str, Any]:
         nonlocal completed
         key = _key(case["case_id"], round_no, arm, condition)
+        visited.add(key)
         if key in existing:
             record = existing[key]
+            expected = _record(case, round_no, arm, condition, messages,
+                               record["response"], record["activation_file"], seed,
+                               runner.model_name, runner.revision)
+            if record != expected:
+                raise ValueError(f"saved collection record differs from its input: {key}")
             if not (out / record["activation_file"]).exists():
                 raise ValueError(f"record {key} exists but activation file is missing")
             return record
@@ -110,6 +129,8 @@ def collect(
                 continue
             for condition in followups:
                 run_one(case, 2, arm, condition, second_messages(origin, condition, prompt_voice))
+    if visited != set(existing):
+        raise ValueError("saved followups do not match the parsed first-answer case flow")
     completion = {
         "total_records": len(existing), "skipped_followups": skipped,
         "records_sha256": hashlib.sha256(records_path.read_bytes()).hexdigest(),

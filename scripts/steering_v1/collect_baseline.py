@@ -25,13 +25,14 @@ def main(cases: Path, output: Path, cohort: str) -> None:
     if hashlib.sha256(cases.read_bytes()).hexdigest() != case_sha:
         raise ValueError("frozen case file changed")
     runner = ForecastRunner(max_new_tokens=96)
+    followups = ("neutral", "opposite", "aligned") if cohort == "train" else ("neutral", "opposite")
     result = collect(cases, output, runner, seed=42, arms=("p_first",),
                      second_sources=("p_first",),
-                     followups=("neutral", "opposite"),
+                     followups=followups,
                      prompt_voice="first_person")
     completed = verify_complete_run(output)
     rows = read_jsonl(output / "records.jsonl")
-    if (len(rows) != 480 or completed["records_sha256"] != baseline_sha or
+    if (len(rows) != 160 * (1 + len(followups)) or completed["records_sha256"] != baseline_sha or
             any(not r["parse_ok"] for r in rows)):
         raise ValueError("frozen baseline count, parsing, or hash differs")
     print(json.dumps({"collection": result, "records_sha256": baseline_sha},

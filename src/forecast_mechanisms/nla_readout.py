@@ -1,4 +1,4 @@
-"""NLA readout with checkpoint-contract checks and matched-vector controls."""
+"""NLA readout with checkpoint compatibility checks and matched-vector controls."""
 
 from __future__ import annotations
 

@@ -1,0 +1,89 @@
+{
+  "analysis_script_sha256": "13b91c4fca82dea1e3cdcd43822f6c970532624fc615a0ef61f93a397f0b8a51",
+  "lexical_audit": "Fixed regular expressions on explanation text; no human or semantic annotations.",
+  "lexical_patterns": {
+    "explicit_feedback": "\\b(reassess|reconsider|disagree|pushback|definitely|no chance)\\b|\\bI thought\\b",
+    "format_or_score": "\\b(format|score|metric|output|token)\\b",
+    "numeric_percentage": "\\b\\d{1,3}\\s*%"
+  },
+  "phases": {
+    "pilot": {
+      "actor_sha256": "50bc728e28e20ddf116ad116794aa2e073f9b54eb4b4eae072dc36179a7a2a57",
+      "first_number_change_mae": 6.25,
+      "first_number_mae_improvement_ci95": [
+        -2.5938288087820855,
+        4.563492063492064
+      ],
+      "lexical_counts": {
+        "explicit_feedback": 0,
+        "format_or_score": 24,
+        "numeric_percentage": 24
+      },
+      "n_cases": 12,
+      "n_descriptions": 24,
+      "n_first_number_pairs": 12,
+      "orthogonal_projection_mean": -0.0018511512559295322,
+      "pair_margin_ci95": [
+        0.010736248766382536,
+        0.035108157976840935
+      ],
+      "pair_margin_mean": 0.022681900377695758,
+      "pair_margin_positive": 11,
+      "parsed_descriptions": 24,
+      "parsed_pairs": 12,
+      "reconstruction_sha256": "02321d1e3808e956233a64443ee695ebc04dfe912e8e9ab78918027a406c96dd",
+      "shared_projection_ci95": [
+        0.021813327019723754,
+        0.07042985161145528
+      ],
+      "shared_projection_mean": 0.04604194045532495,
+      "shared_projection_positive": 10,
+      "train_group_change_mae": 7.33644859813084
+    },
+    "replication": {
+      "actor_sha256": "16150ac152df8e4c61924c3429ad869300c59b1111fe1b480449dc11d04d94a7",
+      "first_number_change_mae": 7.5,
+      "first_number_mae_improvement_ci95": [
+        -4.345238095238092,
+        8.63095238095238
+      ],
+      "lexical_counts": {
+        "explicit_feedback": 0,
+        "format_or_score": 24,
+        "numeric_percentage": 24
+      },
+      "n_cases": 12,
+      "n_descriptions": 24,
+      "n_first_number_pairs": 12,
+      "orthogonal_projection_mean": -3.734528824376563e-05,
+      "pair_margin_ci95": [
+        0.017210600975280006,
+        0.03270876772391299
+      ],
+      "pair_margin_mean": 0.024666485531876486,
+      "pair_margin_positive": 12,
+      "parsed_descriptions": 24,
+      "parsed_pairs": 12,
+      "reconstruction_sha256": "af448f8933610bc29879c125095000f7d92932efcaea6884c414ef88d95bdecc",
+      "shared_projection_ci95": [
+        0.04085657404114803,
+        0.07412722955147426
+      ],
+      "shared_projection_mean": 0.057178596034646034,
+      "shared_projection_positive": 12,
+      "train_group_change_mae": 9.360258121940364
+    }
+  },
+  "pooled": {
+    "n_cases": 24,
+    "orthogonal_projection_mean": -0.0009442482720866489,
+    "pair_margin_mean": 0.023674192954786122,
+    "pair_margin_positive": 23,
+    "parsed_pairs": 24,
+    "shared_projection_mean": 0.05161026824498549,
+    "shared_projection_positive": 22
+  },
+  "protocol": "matched-nla-summary-v1",
+  "selection_sha256": "02120fde69d4cbf1d5245c62eca9447e2afd7d53c08a70b52ce617f32f7c59ec",
+  "source_records_sha256": "43c6cbd82e709e956b531bafd9bae359812d4c11a21a1695450044af19d9101d"
+}

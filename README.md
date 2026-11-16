@@ -4,22 +4,29 @@ Code for studying how Qwen2.5-7B-Instruct reports a percentage and verdict for p
 
 ## Finding
 
-In 34 held-out conversations where the model naturally changed its percentage, replacing a middle-layer state reproduces the pushback percentage in 8 cases. Replacing the output of one attention head at the next layer raises full-percentage matches from 8 to 13. The additional effect comes from a value cached in the model's own answer prefix. On a first disjoint 160-case cohort, a fixed value direction learned from those earlier pairs restores the neutral full percentage in 22 of 75 eligible conversations under the original pushback wording, versus 1 of 75 orthogonal controls. On a second disjoint 160-case cohort, replacing the cached value with its matched neutral value moves first-number scores toward neutral under all four followup wordings. Under the original wording, head 20 restores the complete neutral percentage in 46 of 75 eligible cases versus 6 of 75 controls; replacing all four cached value groups restores 63 versus 4. Full-percentage restoration is lower under paraphrases and an unrelated answer-length challenge.
+A model can accommodate a user's expectation in its verdict while leaving its reported acceptance probability unchanged. In five admissions cases, the answer remains at 75% while the verdict changes from acceptance to rejection after pushback that adds no case information; sustained residual steering restores four of those verdicts with the same percentage. Across all 146 initial accepts in that cohort, the direction reduces verdict flips from 56.2% to 30.1%. On fresh cases under the same wording, flips again fall from 52.7% to 22.6%, with one newly induced flip among 23 initial rejects.
 
-A separate direction derived from same-case neutral-minus-pushback residual states controls verdict generation under the original wording. On a third disjoint 160-case cohort, it preserves the initial acceptance verdict in 38 of 82 naturally flipped cases, versus 7 of 82 equal-norm orthogonal controls. A later single-step check finds that edits at the first number and first verdict can each change some complete verdicts, including verdict changes after the percentage is already written. These are intervention effects at output positions; the direction is not established as a natural mediator of pushback.
+The revised answer is already partly predictable before generation. On independent cases, pre-answer states improve percentage prediction over initial-report fields and predict which initially accepting verdicts will survive pushback. NLA reconstructions also retain a component of neutral-to-pushback state changes, while their descriptions emphasize numerical answer construction. The [pre-answer readout guide](docs/reproduce-readouts.md) and [NLA guide](docs/reproduce-nla.md) give the measurements, baselines, and reproduction commands.
 
-The study uses GradCafe profiles and PeerRead paper titles and abstracts, with eventual outcomes omitted from prompts. It measures the model's reports at decision time. The [research report](docs/report.pdf) and [text version](docs/research-report.md) give the protocol, results, and interpretation. The [case-paired wording guide](docs/reproduce-wording-v2.md) and [verdict-steering guide](docs/reproduce-steering.md) provide frozen protocols, hashes, aggregate results, and reproduction commands. The [code supplement](https://github.com/HowardHsuuu/llm-forecast-revision/releases/download/v0.1.2/forecast-mechanisms-submission-code.zip) includes the earlier validation scripts and LaTeX source.
+The steering effect depends strongly on followup form. In a fixed comparison on 116 fresh parseable cases, an instruction-derived direction reduces the balanced flip rate under two held-out wordings (giving initial acceptance and rejection equal weight) by 3.3 percentage points (95% case-bootstrap interval 0.0–7.1); a textual reminder reduces it by 18.3 points (14.3–22.7). Both interventions continue to follow explicit 10%/90% statistical information and mandatory eligibility constraints. See the [stability reproduction guide](docs/reproduce-stability.md) for the complete comparison and response checks.
+
+Paired interventions identify a value cached from the model's answer prefix that affects the first number. Replacing the block-21 value with its matched neutral counterpart restores the complete neutral percentage in 61.3% of eligible standard-pushback cases, versus 8.0% with equal-norm controls. A further analysis follows a punctuation-state replacement through cached history and identifies an additional attention head at block 26, head 26. Value-only effects repeat across two disjoint 75-case samples; restoring the full tested cache set recovers the unedited digit-score margin in every case. See the [local circuit analysis](docs/reproduce-circuit.md).
+
+Replacing the complete written percentage provides a complementary test of the later verdict: across two disjoint samples it restores acceptance in 98.7% (74/75) of eligible paper cases and 17.6% (13/74) of admissions cases. These results trace influences of dialogue context and the written number on the communicated judgment.
+
+The study uses GradCafe profiles and PeerRead paper titles and abstracts, with eventual outcomes omitted from prompts. Reproduction guides cover the [cache route](docs/reproduce-route.md), [local circuit](docs/reproduce-circuit.md), [case-paired wording check](docs/reproduce-wording-v2.md), [paired-direction steering](docs/reproduce-steering.md), [written-percentage intervention](docs/reproduce-forced-number.md), and [stability comparison](docs/reproduce-stability.md). Each guide specifies the protocol, fixed settings, and reference measurements.
 
 ## Installation
 
-The target model requires a CUDA GPU with approximately 24 GB of available memory; the sprint runs used an A40 48 GB. Use Python 3.10 or newer:
+The target model requires a CUDA GPU with approximately 24 GiB of free memory; the sprint runs used an A40 48 GB. Use Python 3.10 or newer:
 
 ```bash
 python -m venv .venv
-.venv/bin/python -m pip install -e .
+source .venv/bin/activate
+python -m pip install -e .
 ```
 
-The package pins Qwen2.5-7B-Instruct to revision `a09a35458c702b33eeacc393d103063234e8bc28`. Downloaded models, source datasets, and run outputs belong outside this repository.
+The [reference CUDA environment](configs/reference-environment.json) records the inference software versions. The package pins Qwen2.5-7B-Instruct to revision `a09a35458c702b33eeacc393d103063234e8bc28`. Downloaded models, source datasets, and run outputs belong outside this repository.
 
 ## Reproduce the route result
 
@@ -28,8 +35,8 @@ Run these commands from the repository root. Import and sample the two source da
 ```bash
 forecast-mechanisms import-gradcafe '/work/raw/gradcafe/Computer Science.csv' /work/data/gradcafe.jsonl
 forecast-mechanisms import-peerread /work/raw/PeerRead/data/iclr_2017 /work/data/peerread.jsonl
-forecast-mechanisms sample /work/data/cases.jsonl /work/data/gradcafe.jsonl /work/data/peerread.jsonl --per-domain 150
-forecast-mechanisms collect /work/data/cases.jsonl /work/runs/first-person --prompt-voice first_person
+forecast-mechanisms sample /work/data/cases-300.jsonl /work/data/gradcafe.jsonl /work/data/peerread.jsonl --per-domain 150
+forecast-mechanisms collect /work/data/cases-300.jsonl /work/runs/first-person --prompt-voice first_person
 forecast-mechanisms trace /work/runs/first-person /work/runs/decision-traces
 ```
 
@@ -47,7 +54,7 @@ The commands validate collection and trace hashes, exact baseline replays, token
 
 ## Other commands
 
-`probe` fits held-out percentage and verdict readouts; `nla` and `nla-score` use the [official Natural Language Autoencoder inference code](https://github.com/kitft/nla-inference); `intervene` runs residual-direction controls. Their roles and command examples are in [reproduction details](docs/reproduce-route.md). The CLI also provides `audit`, `preflight`, and `analyze` for dataset and run checks.
+`probe` fits readouts from prompt states, while `probe-decision` reproduces the report's decision-token readouts. The [matched-state NLA guide](docs/reproduce-nla.md) reproduces the paired descriptions and reconstruction comparison; `nla` and `nla-score` provide general readouts through the [official Natural Language Autoencoder inference code](https://github.com/kitft/nla-inference). `intervene` runs residual-direction controls. Their command examples are in [reproduction details](docs/reproduce-route.md). The CLI also provides `audit`, `preflight`, and `analyze` for dataset and run checks.
 
 ## Data
 

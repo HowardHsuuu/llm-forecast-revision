@@ -24,6 +24,10 @@ def _parser() -> argparse.ArgumentParser:
     p = sub.add_parser("preflight")
     p.add_argument("cases")
     p.add_argument("work_dir")
+    p.add_argument("--min-gpu-gib", type=float, default=24.0,
+                   help="minimum free CUDA memory in GiB (default: 24)")
+    p.add_argument("--min-disk-gib", type=float, default=20.0,
+                   help="minimum free disk space in GiB (default: 20)")
     p = sub.add_parser("collect")
     p.add_argument("cases")
     p.add_argument("output_dir")
@@ -33,6 +37,12 @@ def _parser() -> argparse.ArgumentParser:
     p = sub.add_parser("probe")
     p.add_argument("run_dir")
     p.add_argument("output_dir")
+    p = sub.add_parser("probe-decision", help="fit readouts from saved decision-token states")
+    p.add_argument("run_dir")
+    p.add_argument("trace_dir")
+    p.add_argument("output_dir")
+    p.add_argument("--block", type=int, default=20)
+    p.add_argument("--all-layers", action="store_true")
     p = sub.add_parser("trace")
     p.add_argument("run_dir")
     p.add_argument("output_dir")
@@ -104,7 +114,8 @@ def main() -> None:
         }
     elif args.command == "preflight":
         from .preflight import preflight
-        result = preflight(args.cases, args.work_dir)
+        result = preflight(args.cases, args.work_dir,
+                           min_disk_gib=args.min_disk_gib, min_gpu_gib=args.min_gpu_gib)
     elif args.command == "collect":
         from .collect import collect
         from .model import ForecastRunner
@@ -114,6 +125,12 @@ def main() -> None:
         from .probes import fit_probes
         result = fit_probes(args.run_dir, args.output_dir)
         result = {"fits": {key: {k: v for k, v in value.items() if k != "layer_curve"} for key, value in result["fits"].items()}}
+    elif args.command == "probe-decision":
+        from .decision_probes import fit_decision_probes
+        result = fit_decision_probes(args.run_dir, args.trace_dir, args.output_dir,
+                                     block=args.block, all_layers=args.all_layers)
+        result = {"fits": {key: {k: v for k, v in value.items() if k != "layer_curve"}
+                           for key, value in result["fits"].items()}}
     elif args.command == "trace":
         from pathlib import Path
         from .decision_trace import collect_decision_traces

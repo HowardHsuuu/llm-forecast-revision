@@ -1,4 +1,4 @@
-"""Loss-aware importers for historical GradCafe and PeerRead records."""
+"""Import historical GradCafe and PeerRead case information."""
 
 from __future__ import annotations
 

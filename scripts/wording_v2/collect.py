@@ -1,4 +1,4 @@
-"""Collect frozen third-cohort conversations on the pinned Qwen checkpoint."""
+"""Collect frozen case-paired wording conversations on the pinned Qwen checkpoint."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def check_inputs() -> dict:
         raise ValueError("model identity changed")
     cases = read_jsonl(CASES)
     if len(cases) != 160 or any("outcome" in row for row in cases):
-        raise ValueError("third-cohort case file is malformed")
+        raise ValueError("case-paired wording case file is malformed")
     return config
 
 
@@ -54,7 +54,7 @@ def baseline() -> None:
     second = [row for row in rows if row["round"] == 2]
     if (len(first) != 160 or len(second) != 2 * sum(row["parse_ok"] for row in first)
             or any(not row["parse_ok"] for row in second)):
-        raise ValueError("third-cohort baseline has unexplained missing or unparsed answers")
+        raise ValueError("case-paired wording baseline has unexplained missing or unparsed answers")
     print(json.dumps({"collection": result, "completion": complete}, sort_keys=True))
 
 

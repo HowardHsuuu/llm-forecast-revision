@@ -1,0 +1,110 @@
+{
+  "conditions": {
+    "paraphrase_a": {
+      "all": {
+        "baseline_mae": 8.03302187178332,
+        "mae_gain": -4.77475082099175,
+        "mae_gain_ci95": [
+          -6.544178779785324,
+          -2.920280562569237
+        ],
+        "n": 158,
+        "probe_mae": 12.807772692775073
+      },
+      "grad_admissions": {
+        "baseline_mae": 6.104555272704938,
+        "mae_gain": -8.011823725513963,
+        "mae_gain_ci95": [
+          -10.376656573665976,
+          -5.614685974928692
+        ],
+        "n": 78,
+        "probe_mae": 14.1163789982189
+      },
+      "paper_acceptance": {
+        "baseline_mae": 9.913276805884745,
+        "mae_gain": -1.6186047390825933,
+        "mae_gain_ci95": [
+          -4.132469600099596,
+          1.0917388486749586
+        ],
+        "n": 80,
+        "probe_mae": 11.531881544967339
+      }
+    },
+    "paraphrase_b": {
+      "all": {
+        "baseline_mae": 7.027783189892874,
+        "mae_gain": -17.695162088162203,
+        "mae_gain_ci95": [
+          -19.40079474461385,
+          -15.949703858607824
+        ],
+        "n": 158,
+        "probe_mae": 24.722945278055082
+      },
+      "grad_admissions": {
+        "baseline_mae": 6.542274607701076,
+        "mae_gain": -21.683767217493543,
+        "mae_gain_ci95": [
+          -23.94323444409144,
+          -19.34529804504935
+        ],
+        "n": 78,
+        "probe_mae": 28.226041825194624
+      },
+      "paper_acceptance": {
+        "baseline_mae": 7.501154057529879,
+        "mae_gain": -13.806272087064148,
+        "mae_gain_ci95": [
+          -15.81629830464751,
+          -11.572496379244216
+        ],
+        "n": 80,
+        "probe_mae": 21.307426144594025
+      }
+    },
+    "unrelated_expectation": {
+      "all": {
+        "baseline_mae": 5.8826746721209195,
+        "mae_gain": -14.614880515107945,
+        "mae_gain_ci95": [
+          -16.426742127180518,
+          -12.771624620421376
+        ],
+        "n": 158,
+        "probe_mae": 20.497555187228862
+      },
+      "grad_admissions": {
+        "baseline_mae": 5.358257840002359,
+        "mae_gain": -15.895070135936157,
+        "mae_gain_ci95": [
+          -18.975648743776258,
+          -12.692798973487267
+        ],
+        "n": 78,
+        "probe_mae": 21.25332797593852
+      },
+      "paper_acceptance": {
+        "baseline_mae": 6.3939810834365165,
+        "mae_gain": -13.366695634800433,
+        "mae_gain_ci95": [
+          -15.193001505076076,
+          -11.381147451658505
+        ],
+        "n": 80,
+        "probe_mae": 19.76067671823695
+      }
+    }
+  },
+  "fitted_readout_sha256": "a3a6168795cd498981c505104f5a8206fcc1512759cedb0df1bc79e0477eacf9",
+  "n_total": 474,
+  "predictions_sha256": "0f69c2ad347ec1be7489dc5d2bab3685a0a3ea421518f278f34959e10e27f7d4",
+  "protocol": "pre-answer-readout-transfer-summary-v1",
+  "script_sha256": "87402a91d2cfc637df0f501c6a4b8492298e762985f3162396cf8edcaf81c4c0",
+  "selected_alpha": 1000.0,
+  "selected_block": 24,
+  "source_records_sha256": "a3433571051e4fe340d1d637fd510bf817a101e5b6fde7afa35dcd586eba6eda",
+  "state_records_sha256": "5cfadcf1a1761d10651c75213c46ec0fad639ef1c6377b74c525ea7ecdfc543e",
+  "test_records_sha256": "194543ab49fabd2b8dc68a80ae3c7a7f56dfd401bf13afd3fe91f734279809cf"
+}

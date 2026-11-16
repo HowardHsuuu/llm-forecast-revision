@@ -32,7 +32,7 @@ class ForecastRunner:
         ).eval()
         cfg = self.model.config
         if cfg.model_type != "qwen2" or cfg.hidden_size != EXPECTED_HIDDEN or cfg.num_hidden_layers != EXPECTED_BLOCKS:
-            raise ValueError("target checkpoint is incompatible with the pinned Qwen2.5 NLA layer/dimension contract")
+            raise ValueError("target checkpoint does not match the required Qwen2.5 architecture")
         if getattr(cfg, "_name_or_path", None) is None:
             raise ValueError("missing model identity")
 
